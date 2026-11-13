@@ -3,8 +3,14 @@ import Foundation
 /// Controls SketchyBar visibility by shelling out to the `sketchybar` CLI.
 public final class SketchyBarController: BarController {
     private let sketchybarPath: String
+    private let hideEvent: String?
+    private let showEvent: String?
 
-    public init() {
+    /// With an event name, that transition only triggers the event and the
+    /// SketchyBar config does the hiding / showing (and any animation) itself.
+    public init(hideEvent: String? = nil, showEvent: String? = nil) {
+        self.hideEvent = hideEvent
+        self.showEvent = showEvent
         if FileManager.default.fileExists(atPath: "/opt/homebrew/bin/sketchybar") {
             sketchybarPath = "/opt/homebrew/bin/sketchybar"
         } else if FileManager.default.fileExists(atPath: "/usr/local/bin/sketchybar") {
@@ -15,11 +21,19 @@ public final class SketchyBarController: BarController {
     }
 
     public func hide() {
+        if let hideEvent = hideEvent {
+            run(arguments: ["--trigger", hideEvent])
+            return
+        }
         // Instant hide — macOS menu bar is already sliding in
         run(arguments: ["--bar", "hidden=on", "y_offset=0"])
     }
 
     public func show() {
+        if let showEvent = showEvent {
+            run(arguments: ["--trigger", showEvent])
+            return
+        }
         // Unhide off-screen, then animate sliding down
         run(arguments: ["--bar", "hidden=off", "y_offset=-50"])
         runAsync(arguments: ["--animate", "sin", "12", "--bar", "y_offset=0"])

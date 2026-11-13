@@ -57,6 +57,22 @@ final class ConfigTests: XCTestCase {
         XCTAssertEqual(config.debounce, 0.001)
     }
 
+    func testHideAndShowEvents() throws {
+        let config = try parseArguments(["--hide-event", "bar_hide", "--show-event", "bar_show"])
+        XCTAssertEqual(config.hideEvent, "bar_hide")
+        XCTAssertEqual(config.showEvent, "bar_show")
+        XCTAssertNil(try parseArguments([]).hideEvent)
+        XCTAssertNil(try parseArguments(["--hide-event", "bar_hide"]).showEvent)
+    }
+
+    func testMissingEventNameThrows() {
+        for args in [["--hide-event"], ["--show-event", ""], ["--hide-event", "--debug"]] {
+            XCTAssertThrowsError(try parseArguments(args)) { error in
+                XCTAssertEqual(error as? ConfigError, .missingEventName(args[0]))
+            }
+        }
+    }
+
     func testCheckPermissions() throws {
         let config = try parseArguments(["--check-permissions"])
         XCTAssertTrue(config.checkPermissions)

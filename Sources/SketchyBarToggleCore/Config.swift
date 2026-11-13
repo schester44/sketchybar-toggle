@@ -5,6 +5,9 @@ public struct Config: Equatable {
     public var menuBarHeight: CGFloat = 50
     public var debounce: TimeInterval = 0.15
     public var hideDelay: TimeInterval = 0
+    /// SketchyBar events to trigger instead of the built-in hide / show.
+    public var hideEvent: String?
+    public var showEvent: String?
     public var checkPermissions = false
     public var setup = false
     public var showVersion = false
@@ -17,6 +20,7 @@ public struct Config: Equatable {
 public enum ConfigError: Error, Equatable {
     case unknownArgument(String)
     case invalidHideDelay
+    case missingEventName(String)
 }
 
 /// Parse command-line arguments into a Config. Accepts the args array (excluding argv[0]).
@@ -47,6 +51,17 @@ public func parseArguments(_ args: [String]) throws -> Config {
                 throw ConfigError.invalidHideDelay
             }
             config.hideDelay = val / 1000.0
+        case "--hide-event", "--show-event":
+            let flag = args[i]
+            i += 1
+            guard i < args.count, !args[i].isEmpty, !args[i].hasPrefix("--") else {
+                throw ConfigError.missingEventName(flag)
+            }
+            if flag == "--hide-event" {
+                config.hideEvent = args[i]
+            } else {
+                config.showEvent = args[i]
+            }
         case "--check-permissions":
             config.checkPermissions = true
         case "--setup":

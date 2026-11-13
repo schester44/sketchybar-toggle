@@ -16,6 +16,9 @@ do {
 } catch ConfigError.invalidHideDelay {
     fputs("--hide-delay requires a finite, non-negative number of milliseconds\n", stderr)
     exit(1)
+} catch let ConfigError.missingEventName(flag) {
+    fputs("\(flag) requires a SketchyBar event name\n", stderr)
+    exit(1)
 } catch {
     fputs("Error: \(error)\n", stderr)
     exit(1)
@@ -43,7 +46,7 @@ if config.setup {
 
 // MARK: - Setup
 
-let controller = SketchyBarController()
+let controller = SketchyBarController(hideEvent: config.hideEvent, showEvent: config.showEvent)
 let stateMachine = BarStateMachine(
     controller: controller,
     triggerZone: config.triggerZone,
@@ -117,6 +120,8 @@ func printUsage() {
       --menu-bar-height <px>    Pixels from top defining menu bar zone (default: 50)
       --debounce <ms>           Delay before showing SketchyBar again (default: 150)
       --hide-delay <ms>         Dwell time in trigger zone before hiding (default: 0)
+      --hide-event <name>       Trigger this SketchyBar event instead of hiding the bar
+      --show-event <name>       Trigger this SketchyBar event instead of showing the bar
       --check-permissions       Check permissions (no longer needed in v0.4.0+)
       --setup                   Check prerequisites and show auto-start instructions
       --debug                   Log events to /tmp/sketchybar-toggle-debug.log

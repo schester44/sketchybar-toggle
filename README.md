@@ -87,6 +87,8 @@ SketchyBar Toggle works best when your SketchyBar bar settings allow for smooth 
 - `sketchybar --bar hidden=on` — to hide
 - `sketchybar --bar hidden=off y_offset=-50` followed by `sketchybar --animate sin 12 --bar y_offset=0` — to show with a slide-down animation
 
+With `--hide-event <name>` / `--show-event <name>`, SketchyBar Toggle runs `sketchybar --trigger <name>` instead and leaves the hiding, showing and any animation to your config. Register the events with `sketchybar --add event <name>` before starting SketchyBar Toggle; the show event is also triggered on startup and on exit.
+
 ### Required: `topmost = "window"`
 
 Your SketchyBar config **must** include `topmost = "window"`. This tells SketchyBar to render above the native macOS menu bar. Without it, SketchyBar renders behind the menu bar and will appear invisible even when sketchybar-toggle un-hides it.
@@ -207,6 +209,8 @@ sketchybar-toggle --version
 | `--menu-bar-height <px>` | 50 | Distance from top defining the menu bar zone — SketchyBar won't reappear until the mouse is below this |
 | `--hide-delay <ms>` | 0 | Time the cursor must remain in the trigger zone before hiding; leaving the zone cancels the pending hide |
 | `--debounce <ms>` | 150 | Delay in milliseconds before SketchyBar reappears, prevents flicker on rapid mouse movement |
+| `--hide-event <name>` | | Trigger this SketchyBar event instead of hiding the bar, so your config can hide (and animate) it itself |
+| `--show-event <name>` | | Trigger this SketchyBar event instead of showing the bar |
 | `--setup` | | Check prerequisites and show auto-start instructions |
 | `--debug` | | Log mouse position and state changes to `/tmp/sketchybar-toggle-debug.log` |
 | `--version` | | Print version |
